@@ -2,9 +2,7 @@ var layerFarmacias;
 var urlFarmacias = "datos/farmacias.geojson";
 
 function addDatosFarmacias() {
-
-        var puntosCluster = L.markerClusterGroup();
-
+    var puntosCluster = L.markerClusterGroup();
         layerFarmacias  = new L.GeoJSON.AJAX(urlFarmacias, {
             onEachFeature: function (feature, layer) {
                 popupContent = "<b>" + feature.properties.EQUIPAMENT + "</b>"+
@@ -14,6 +12,8 @@ function addDatosFarmacias() {
                 layer.bindPopup(popupContent);
             },
             pointToLayer: function (feature, latlng) {
+
+                //console.info(feature);
                 puntosCluster.addLayer(L.marker(latlng));
                 return L.circleMarker(latlng, {
                     radius: 6,
@@ -27,24 +27,32 @@ function addDatosFarmacias() {
         }).addTo(map);
 
         map.setView([41.399733,2.168598],13);
-        controlCapas.addOverlay(layerFarmacias,"Farmacias");
+     controlCapas.addOverlay(layerFarmacias,"Farmacias");
+     controlCapas.addOverlay(puntosCluster,"Cluster");
+     var searchControl = new L.Control.Search({
+        layer: layerFarmacias,
+        initial:false,
+        propertyName: 'EQUIPAMENT',
+        circleLocation: true,
+        moveToLocation: function (latlng) {
+            map.setView(latlng, 17);
+        }
+    });
 
-        controlCapas.addOverlay(puntosCluster,"Cluster");
+    searchControl.on('search:locationfound', function(e) {
+        e.layer.openPopup();
+    });
+    map.addControl(searchControl);
 
-        var searchControl = new L.Control.Search({
-            layer: layerFarmacias,
-            initial:false,
-            propertyName: 'EQUIPAMENT',
-            circleLocation: true,
-            moveToLocation: function (latlng) {
-                map.setView(latlng, 17);
-            }
-        });
-
-        searchControl.on('search:locationfound', function(e) {
-            e.layer.openPopup();
-        });
-        map.addControl(searchControl);
-
+    var rivers = new L.GeoJSON.AJAX(
+        'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_rivers_europe.geojson', {
+    
+            style: function (feature) {
+                return {
+                    color: "#00ffe1",
+                    weight: 6
+                }
+            },
+        }).addTo(map);
 
 }

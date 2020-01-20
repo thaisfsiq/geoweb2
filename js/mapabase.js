@@ -12,7 +12,7 @@ function init() {
         attribution: 'Tiles © Esri',
     }).addTo(map);
 
-    osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    osm = L.tileLayer('https://tilemaps.icgc.cat/mapfactory/wmts/gris_topo_suau/CAT3857/{z}/{x}/{y}.png', {
         maxZoom: 19,
         minZoom: 1,
         attribution: 'OSM'
